@@ -42,16 +42,19 @@ var struct = function(name /*, varargs */) {
 };
 
 var struct_equal = function(s1, s2) {
+  var proto_of = Object.getPrototypeOf;
   function is_struct(s) {
     return typeof s === "object" &&
-      Object.getPrototypeOf(Object.getPrototypeOf(s)) === struct_proto;
+      proto_of(proto_of(s)) === struct_proto;
   }
+  // This bottoms out the primitive case and any objects that are
+  // reference-equal (more than just structs)
   if (s1 === s2) { return true; }
   // Only deep-compare structs
   if (!(is_struct(s1) && is_struct(s2))) { return false; }
 
   // Are they the same kind of struct?
-  if(Object.getPrototypeOf(s1) !== Object.getPrototypeOf(s2)) {
+  if(proto_of(s1) !== proto_of(s2)) {
     return false;
   }
   var allsame = true;
